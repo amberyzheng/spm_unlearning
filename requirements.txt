@@ -1,0 +1,12 @@
+pytorch-lightning==2.5.0.post0
+torch==2.6.0
+torchvision==0.21.0
+torchmetrics==1.6.1
+tqdm==4.67.1
+wandb==0.19.6
+ema-pytorch==0.7.7
+scikit-learn
+Pillow
+PyYAML
+numpy<2
+torch-fidelity

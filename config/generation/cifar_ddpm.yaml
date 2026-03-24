@@ -1,0 +1,81 @@
+model:
+  target: models.spm_ddpm.SemiParametricDDPM
+  params:
+    config:
+      # model params
+        model_type: 'DDPM'
+        net_type: 'UNet'
+        diffusion:
+            n_T: 1000
+            betas: [1.0e-4, 0.02]
+        network:
+            image_shape: [3, 32, 32]
+            n_channels: 128
+            ch_mults: [1, 2, 2, 2]
+            is_attn: [False, True, False, False]
+            dropout: 0.1
+            n_blocks: 2
+            use_res_for_updown: False
+
+        # training params
+        n_epoch: 2000
+        lrate: 5.0e-4
+        warm_epoch: 100
+        load_epoch: -1
+        flip: True
+        ema: 0.9993
+        amsgrad: False
+        eps: 0.00000001
+        grad_clip: 1.0
+        weight_decay: 0.0
+        beta1: 0.9
+
+        # testing params
+        n_sample_per_class: 10
+        guide_w: 0.3
+        steps: 50
+
+    n_classes: 10
+
+data:
+  target: dataset.cifar_datamodule.CIFARDataModule
+  params:
+    batch_size: 256
+    dataset_name: cifar10
+    model_type: ddpm
+    num_classes: 10
+    support_size_train: 256
+    support_size_eval: 1024
+    query_digits: null
+    support_digits: null
+    normalize: false
+
+lightning:
+  logger:
+    target: pytorch_lightning.loggers.WandbLogger
+    params:
+      project: Spm
+      name: cifar_ddpm
+  callbacks:
+    lr_monitor:
+      target: pytorch_lightning.callbacks.LearningRateMonitor
+      params:
+        logging_interval: step
+    checkpoint_callback:
+      target: pytorch_lightning.callbacks.ModelCheckpoint
+      params:
+        monitor: val_fid
+        mode: min
+        save_top_k: -1
+        filename: "best-{epoch:02d}-{val_fid:.2f}"
+        save_last: true
+        dirpath: "./results/generation/cifar_ddpm"
+    gpu_memory:
+      target: utils.logging.GPUMemoryCallback
+  trainer:
+    max_epochs: 2000
+    devices: 7
+    check_val_every_n_epoch: 100
+    log_every_n_steps: 50
+    accelerator: "gpu"
+    strategy: "ddp_find_unused_parameters_true"

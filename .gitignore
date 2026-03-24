@@ -1,0 +1,13 @@
+wandb/
+data/
+checkpoints/
+images/
+*.pyc
+__pycache__/
+*.out
+*.pkl
+results/
+cache/
+lightning_logs/
+random_unlearn_idx/
+*.npy

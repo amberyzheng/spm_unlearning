@@ -1,0 +1,52 @@
+model:
+  target: models.spm_classifier.SemiParametricClassifier
+  params:
+    encoder_type: resnet18
+    embed_dim: 512
+    num_classes: 10
+    learning_rate: 0.1
+    pretrained_imagenet: false
+    pretrained_cifar: false
+
+data:
+  target: dataset.cifar_datamodule.CIFARDataModule
+  params:
+    batch_size: 256
+    dataset_name: cifar10
+    model_type: classifier
+    num_classes: 10
+    support_size_train: 1024
+    support_size_eval: 4096
+    query_digits: null
+    support_digits: null
+    normalize: true
+
+lightning:
+  logger:
+    target: pytorch_lightning.loggers.WandbLogger
+    params:
+      project: Spm
+      name: cifar_resnet18
+  callbacks:
+    lr_monitor:
+      target: pytorch_lightning.callbacks.LearningRateMonitor
+      params:
+        logging_interval: step
+    checkpoint_callback:
+      target: pytorch_lightning.callbacks.ModelCheckpoint
+      params:
+        monitor: val_acc
+        mode: max
+        save_top_k: 1
+        save_last: true
+        filename: "best-{epoch:02d}-{val_acc:.2f}"
+        dirpath: "./results/classification/cifar_resnet18"
+    gpu_memory:
+      target: utils.logging.GPUMemoryCallback
+  trainer:
+    max_epochs: 100
+    devices: 1
+    check_val_every_n_epoch: 10
+    log_every_n_steps: 20
+    accelerator: "gpu"
+    strategy: "ddp_find_unused_parameters_true"
