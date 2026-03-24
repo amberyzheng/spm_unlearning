@@ -150,7 +150,7 @@ If you find this work useful, please cite:
 ```bibtex
 @inproceedings{zheng2026designing,
   title={Designing to Forget: Deep Semi-parametric Models for Unlearning},
-  author={Zheng, Amber Yijia and Tai, Yu-Shan and Yeh, Raymond A.},
+  author={Zheng, Amber Yijia* and Tai, Yu-Shan* and Yeh, Raymond A.},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   year={2026}
 }
